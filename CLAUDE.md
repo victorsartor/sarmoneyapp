@@ -1,11 +1,62 @@
-# MazyOS — Sistema operacional do negócio
+# SARMONEYAPP — MazyOS
+
+> Molde adaptado pro perfil **freelancer solo / projeto pessoal** — aqui
+> não tem cliente externo pagando, o "cliente" é a própria família do
+> criador. O sistema gira em torno de manter o SARMONEYAPP evoluindo e
+> organizado, sem depender de captação, entrega pra terceiros ou cobrança.
+
+## O que é esse workspace
+
+Operação do SARMONEYAPP — ferramenta interna de gestão financeira
+familiar. Aqui ficam a memória do projeto, a identidade visual (quando
+definida) e o que for produzido em torno dele.
+
+**Estrutura de pastas:**
+- `_memoria/` — quem é o projeto, como ele fala, foco atual
+- `identidade/` — identidade visual (ainda em branco)
+- `marketing/` — se algum dia o projeto virar algo mais público
+- `saidas/` — documentos e materiais pontuais
+- `dados/` — arquivos a analisar
+- `scripts/` — scripts de apoio
+
+## Quem sou
+
+Criador solo do SARMONEYAPP, um projeto pessoal/familiar de gestão
+financeira. Sem equipe, sem clientes externos.
+
+## O projeto
+
+- Ferramenta interna de gestão financeira familiar
+- Divide e organiza despesas mensais (aluguel/condomínio, cartão, Pix)
+- Rateio por porcentagem entre os membros da família
+- Não é produto público
+
+## Como trabalho
+
+Solo, no meu ritmo. O maior obstáculo hoje é constância — manter o
+projeto avançando semana a semana em vez de deixar parado.
+
+## Tom de voz
+
+Direto, técnico-simples, sem enfeite nem tom comercial (ver
+`_memoria/preferencias.md` para o exemplo real de escrita).
+
+Evitar: jargão técnico desnecessário, fala de coach/guru.
+
+## Regras do sistema
+
+- Projeto novo/relacionado → registrar em `_memoria/estrategia.md`
+- "Codar" foi identificado como a tarefa mais repetitiva — candidata a
+  virar skill via `/mapear-rotinas`
+- Outras regras a adicionar conforme o uso
+
+---
 
 Sua empresa roda em cima desse arquivo. Aqui ficam as regras de operação
 do MazyOS — como o Claude lê o contexto, aprende com correções, mantém
 tudo atualizado e cria skills novas conforme a operação evolui.
 
-Esse arquivo é editável. Quando o `/instalar` rodar, ele complementa o
-final dessa página com as regras específicas do seu negócio.
+Esse arquivo é editável.
 
 ---
 
@@ -73,15 +124,14 @@ valor duradouro.
 
 ## Manter contexto atualizado
 
-Ao terminar uma tarefa que mudou algo relevante (cliente novo, skill
-nova, mudança de foco, processo novo, ferramenta instalada, estrutura
-alterada), perguntar:
+Ao terminar uma tarefa que mudou algo relevante (mudança de foco,
+processo novo, ferramenta instalada, estrutura alterada), perguntar:
 
 > "Isso mudou algo no teu contexto. Quer que eu atualize a memória?"
 
 Se sim, identificar o que atualizar:
 
-- **Cliente, serviço, ferramenta, equipe** → `_memoria/empresa.md`
+- **Ferramenta, estrutura, decisão técnica** → `_memoria/empresa.md`
 - **Mudança de prioridade ou foco** → `_memoria/estrategia.md`
 - **Tom ou estilo** → `_memoria/preferencias.md`
 - **Pasta, regra de organização, skill criada** → `CLAUDE.md`
@@ -91,7 +141,7 @@ Mostrar o que vai mudar antes de salvar. Não reformatar o arquivo
 inteiro, só adicionar ou editar a linha relevante.
 
 **Quando NÃO perguntar:**
-- Tarefas pontuais sem impacto no contexto (escrever um email avulso, criar um post)
+- Tarefas pontuais sem impacto no contexto
 - Perguntas simples ou conversas sem ação
 - Mudanças já salvas pelo bloco "Aprender com correções"
 
