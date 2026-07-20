@@ -20,7 +20,7 @@ Dois caminhos. Escolhe o que combina contigo.
 Abre o Claude Code em qualquer pasta e cola:
 
 ```
-Clona o https://github.com/mazzeoia/MazyOS.git na pasta atual,
+Clona o https://github.com/victorsartor/sarmoneyapp.git na pasta atual,
 entra nela e roda o /instalar.
 ```
 
@@ -30,8 +30,8 @@ só responde.
 ### Pelo terminal (mais previsível)
 
 ```
-git clone https://github.com/mazzeoia/MazyOS.git
-cd MazyOS
+git clone https://github.com/victorsartor/sarmoneyapp.git
+cd sarmoneyapp
 code .
 ```
 
@@ -39,9 +39,9 @@ Na janela do VS Code que abrir: terminal integrado → `claude` → `/instalar`.
 
 ---
 
-Quando o `/instalar` terminar, renomeia a pasta `MazyOS/` pro nome do teu
+Quando o `/instalar` terminar, renomeia a pasta pro nome do teu
 negócio (fecha o VS Code, renomeia no Explorer/Finder, abre de novo). A
-pasta não fica como "MazyOS" — ela é o teu negócio agora.
+pasta não fica com o nome genérico do clone — ela é o teu negócio agora.
 
 O `/instalar` roda uma vez só. Te entrevista sobre o negócio, monta a
 memória e configura o sistema. Depois disso, é só usar.
@@ -107,4 +107,4 @@ versiona no GitHub, fica tudo seu.
 
 ## Quando precisar
 
-[mazzeoia.com.br](https://mazzeoia.com.br)
+[github.com/victorsartor/sarmoneyapp](https://github.com/victorsartor/sarmoneyapp)

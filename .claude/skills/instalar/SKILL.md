@@ -16,7 +16,7 @@ Esse é o primeiro comando que o usuário roda depois de clonar o repositório. 
 
 ### 1. Nome da pasta
 
-Conferir o nome da pasta atual (`basename "$(pwd)"`). Se for `mazyos`, `MazyOS`, `MazyOS-main`, `mazyos-main` ou variação genérica:
+Conferir o nome da pasta atual (`basename "$(pwd)"`). Se for `mazyos`, `MazyOS`, `MazyOS-main`, `mazyos-main`, `sarmoneyapp`, `sarmoneyapp-main` ou variação genérica:
 
 > "Notei que a pasta atual ainda tem nome genérico ('<nome-atual>'). O ideal é a pasta ter o nome do seu negócio, não 'MazyOS'. Quando terminarmos o setup, te lembro de renomear (é rápido — fechar VS Code, renomear a pasta no Finder/Explorer, abrir de novo). Bora seguir?"
 

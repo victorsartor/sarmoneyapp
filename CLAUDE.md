@@ -14,6 +14,7 @@ definida) e o que for produzido em torno dele.
 **Estrutura de pastas:**
 - `_memoria/` — quem é o projeto, como ele fala, foco atual
 - `identidade/` — identidade visual (ainda em branco)
+- `site/` — app web do SARMONEYAPP (React + Vite + TypeScript + Tailwind + Supabase)
 - `marketing/` — se algum dia o projeto virar algo mais público
 - `saidas/` — documentos e materiais pontuais
 - `dados/` — arquivos a analisar

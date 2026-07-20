@@ -9,7 +9,7 @@
 **Perfil:** Freelancer (projeto solo, uso pessoal/familiar — sem clientes externos)
 **Atende clientes:** Não tem clientes externos — só a família do criador usa
 **Equipe:** Solo
-**Ferramentas:**
+**Ferramentas:** React + Vite + TypeScript + Tailwind v4 (app em `site/`), Supabase (banco de dados Postgres + login)
 **Principais entregas:** Divisão e organização de despesas familiares mensais
 
 ## Contexto adicional
