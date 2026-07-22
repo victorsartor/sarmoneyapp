@@ -9,6 +9,7 @@ import {
   fetchExpensesForMonth,
   fetchProfiles,
   removeExpense,
+  updateExpense,
 } from "./lib/data";
 import { computeMonthSummary } from "./lib/summary";
 import { currentMonthKey, monthLabel } from "./lib/format";
@@ -66,6 +67,18 @@ export default function App() {
     loadData();
   }
 
+  async function handleEdit(
+    expense: Expense,
+    changes: { description: string; amount: number; personId?: string | null; purchaseDate?: string | null },
+  ) {
+    try {
+      await updateExpense(expense.id, changes);
+      loadData();
+    } catch (err) {
+      alert(`Não deu pra salvar a edição: ${(err as Error).message ?? err}`);
+    }
+  }
+
   if (loading) return null;
   if (!profile) return <Login />;
 
@@ -114,6 +127,7 @@ export default function App() {
               canRemove={isAdmin}
               onRemove={handleRemove}
               onCancelRecurring={handleCancelRecurring}
+              onEdit={handleEdit}
             />
           </section>
         </div>

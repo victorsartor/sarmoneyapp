@@ -189,6 +189,28 @@ export async function addCardPurchase(params: {
   if (error) throw error;
 }
 
+export async function updateExpense(
+  id: string,
+  changes: {
+    description: string;
+    amount: number;
+    personId?: string | null;
+    purchaseDate?: string | null;
+  },
+) {
+  const { error } = await supabase
+    .from("expenses")
+    .update({
+      description: changes.description,
+      amount: changes.amount,
+      ...(changes.personId !== undefined ? { person_id: changes.personId } : {}),
+      ...(changes.purchaseDate !== undefined ? { purchase_date: changes.purchaseDate } : {}),
+    })
+    .eq("id", id);
+
+  if (error) throw error;
+}
+
 export async function removeExpense(expense: Pick<Expense, "id" | "purchaseGroupId">) {
   // Se a despesa faz parte de uma compra parcelada (cartão ou
   // apartamento), apaga todas as parcelas do grupo — não só a do mês

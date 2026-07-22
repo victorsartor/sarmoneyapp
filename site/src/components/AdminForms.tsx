@@ -75,16 +75,21 @@ function ApartmentForm({
       return;
 
     setSaving(true);
-    await addApartmentPurchase({
-      startMonth,
-      totalAmount: totalValue,
-      installments: installmentsValue,
-      monthlyGrowthPercent: growthValue,
-      createdBy,
-    });
-    setSaving(false);
-    setTotalAmount("");
-    onSaved();
+    try {
+      await addApartmentPurchase({
+        startMonth,
+        totalAmount: totalValue,
+        installments: installmentsValue,
+        monthlyGrowthPercent: growthValue,
+        createdBy,
+      });
+      setTotalAmount("");
+      onSaved();
+    } catch (err) {
+      alert(`Não deu pra salvar: ${(err as Error).message ?? err}`);
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -161,30 +166,35 @@ function SingleExpenseForm({
     if (!description.trim() || !amount || Number.isNaN(value) || !personId) return;
 
     setSaving(true);
-    if (recurring) {
-      await addRecurringExpense({
-        category,
-        description: description.trim(),
-        amount: value,
-        startMonth: month,
-        personId,
-        createdBy,
-      });
-    } else {
-      await addSingleExpense({
-        category,
-        description: description.trim(),
-        amount: value,
-        month,
-        personId,
-        createdBy,
-      });
+    try {
+      if (recurring) {
+        await addRecurringExpense({
+          category,
+          description: description.trim(),
+          amount: value,
+          startMonth: month,
+          personId,
+          createdBy,
+        });
+      } else {
+        await addSingleExpense({
+          category,
+          description: description.trim(),
+          amount: value,
+          month,
+          personId,
+          createdBy,
+        });
+      }
+      setDescription("");
+      setAmount("");
+      setRecurring(false);
+      onSaved();
+    } catch (err) {
+      alert(`Não deu pra salvar: ${(err as Error).message ?? err}`);
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
-    setDescription("");
-    setAmount("");
-    setRecurring(false);
-    onSaved();
   }
 
   return (
@@ -278,32 +288,37 @@ function CardPurchaseForm({
       return;
 
     setSaving(true);
-    if (recurring) {
-      await addRecurringExpense({
-        category: "Cartão",
-        description: description.trim(),
-        amount: amountValue,
-        startMonth: purchaseDate.slice(0, 7),
-        personId,
-        createdBy,
-        purchaseDate,
-      });
-    } else {
-      await addCardPurchase({
-        description: description.trim(),
-        installmentAmount: amountValue,
-        installments: installmentsValue,
-        purchaseDate,
-        personId,
-        createdBy,
-      });
+    try {
+      if (recurring) {
+        await addRecurringExpense({
+          category: "Cartão",
+          description: description.trim(),
+          amount: amountValue,
+          startMonth: purchaseDate.slice(0, 7),
+          personId,
+          createdBy,
+          purchaseDate,
+        });
+      } else {
+        await addCardPurchase({
+          description: description.trim(),
+          installmentAmount: amountValue,
+          installments: installmentsValue,
+          purchaseDate,
+          personId,
+          createdBy,
+        });
+      }
+      setDescription("");
+      setInstallmentAmount("");
+      setInstallments("1");
+      setRecurring(false);
+      onSaved();
+    } catch (err) {
+      alert(`Não deu pra salvar: ${(err as Error).message ?? err}`);
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
-    setDescription("");
-    setInstallmentAmount("");
-    setInstallments("1");
-    setRecurring(false);
-    onSaved();
   }
 
   return (
