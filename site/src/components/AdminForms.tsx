@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Profile } from "../types";
 import {
   addApartmentPurchase,
@@ -160,6 +160,12 @@ function SingleExpenseForm({
   const [recurring, setRecurring] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  useEffect(() => {
+    if (!profiles.some((p) => p.id === personId)) {
+      setPersonId(profiles[0]?.id ?? "");
+    }
+  }, [profiles, personId]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const value = Number(amount);
@@ -272,6 +278,12 @@ function CardPurchaseForm({
   const [purchaseDate, setPurchaseDate] = useState(`${month}-01`);
   const [recurring, setRecurring] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!profiles.some((p) => p.id === personId)) {
+      setPersonId(profiles[0]?.id ?? "");
+    }
+  }, [profiles, personId]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
