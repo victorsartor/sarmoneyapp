@@ -44,6 +44,12 @@ meses anteriores no histórico. Já apagar uma despesa parcelada (cartão
 ou apartamento) remove a série inteira, em todos os meses — usado pra
 corrigir lançamento errado, não pra encerrar algo em andamento.
 
+Progresso (2026-07-27): app publicado em produção, com lançar/editar/
+excluir despesas funcionando (confirmação antes de excluir). Corrigido
+bug em que o dropdown de pessoa não sincronizava com os perfis
+carregados — "Salvar" silenciosamente não fazia nada pra quem não fosse
+a pessoa padrão do formulário.
+
 ## Prioridade principal
 
 Gargalo: falta de constância / preguiça pra tocar o projeto sozinho. A

@@ -1,6 +1,6 @@
 import type { Expense, Profile } from "../types";
 
-export interface PersonSummary {
+interface PersonSummary {
   profile: Profile;
   apartmentShare: number;
   individual: number;

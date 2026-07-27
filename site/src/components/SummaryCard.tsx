@@ -12,8 +12,11 @@ export function SummaryCard({ summary }: Props) {
         Resumo do mês
       </h2>
 
-      <p className="mb-4 text-3xl font-semibold tabular-nums">
+      <p className="text-3xl font-semibold tabular-nums">
         {formatCurrency(summary.total)}
+      </p>
+      <p className="mb-4 text-xs text-neutral-400">
+        Apartamento (total): {formatCurrency(summary.apartmentTotal)}
       </p>
 
       {summary.perPerson.length === 0 ? (

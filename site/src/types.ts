@@ -28,6 +28,4 @@ export interface Expense {
   installmentTotal: number | null;
   purchaseDate: string | null; // 'YYYY-MM-DD', dia exato (hoje só usado no Cartão)
   recurring: boolean; // assinatura tipo Netflix: cobra todo mês até ser cancelada
-  activeUntil: string | null; // 'YYYY-MM', último mês em que uma recorrente ainda cobra
-  createdBy: string;
 }

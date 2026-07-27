@@ -13,12 +13,10 @@ interface ExpenseRow {
   installment_total: number | null;
   purchase_date: string | null;
   recurring: boolean;
-  active_until: string | null;
-  created_by: string;
 }
 
 const EXPENSE_FIELDS =
-  "id, category, description, amount, month, person_id, purchase_group_id, installment_number, installment_total, purchase_date, recurring, active_until, created_by";
+  "id, category, description, amount, month, person_id, purchase_group_id, installment_number, installment_total, purchase_date, recurring";
 
 function fromRow(row: ExpenseRow): Expense {
   return {
@@ -33,8 +31,6 @@ function fromRow(row: ExpenseRow): Expense {
     installmentTotal: row.installment_total,
     purchaseDate: row.purchase_date,
     recurring: row.recurring,
-    activeUntil: row.active_until,
-    createdBy: row.created_by,
   };
 }
 

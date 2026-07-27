@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { EXPENSE_CATEGORIES } from "../types";
 import type { Profile } from "../types";
 import {
   addApartmentPurchase,
@@ -6,6 +7,10 @@ import {
   addRecurringExpense,
   addSingleExpense,
 } from "../lib/data";
+
+const SINGLE_EXPENSE_CATEGORIES = EXPENSE_CATEGORIES.filter(
+  (c): c is "Pix" | "Outro" => c === "Pix" || c === "Outro",
+);
 
 interface Props {
   month: string;
@@ -211,8 +216,11 @@ function SingleExpenseForm({
           onChange={(e) => setCategory(e.target.value as "Pix" | "Outro")}
           className="rounded-lg border border-black/10 bg-transparent px-2 py-2 text-sm dark:border-white/10"
         >
-          <option value="Pix">Pix</option>
-          <option value="Outro">Outro</option>
+          {SINGLE_EXPENSE_CATEGORIES.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
         </select>
         <select
           value={personId}
