@@ -35,7 +35,10 @@ export function useAuth() {
 
     loadProfile();
 
-    const { data: subscription } = supabase.auth.onAuthStateChange(() => {
+    const { data: subscription } = supabase.auth.onAuthStateChange((event) => {
+      // O listener dispara INITIAL_SESSION assim que é registrado — sem
+      // ignorar isso, todo carregamento buscava o perfil duas vezes.
+      if (event === "INITIAL_SESSION") return;
       loadProfile();
     });
 

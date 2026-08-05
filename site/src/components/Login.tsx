@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FAMILY_LOGINS } from "../lib/family";
 import { useAuth } from "../hooks/useAuth";
+import { Spinner } from "./Spinner";
 
 export function Login() {
   const { signIn } = useAuth();
@@ -61,8 +62,9 @@ export function Login() {
           <button
             type="submit"
             disabled={!selected || !password || loading}
-            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+            className="flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
           >
+            {loading && <Spinner className="h-4 w-4" />}
             {loading ? "Entrando..." : "Entrar"}
           </button>
         </form>

@@ -4,6 +4,7 @@ import { Login } from "./components/Login";
 import { AdminForms } from "./components/AdminForms";
 import { SummaryCard } from "./components/SummaryCard";
 import { ExpenseList } from "./components/ExpenseList";
+import { FullPageSpinner, Spinner } from "./components/Spinner";
 import {
   cancelRecurringExpense,
   fetchApartmentShares,
@@ -22,16 +23,28 @@ export default function App() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [shares, setShares] = useState<ApartmentShare[]>([]);
   const [month, setMonth] = useState(currentMonthKey());
+  const [loadingData, setLoadingData] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
-    const [profilesData, expensesData, sharesData] = await Promise.all([
-      fetchProfiles(),
-      fetchExpensesForMonth(month),
-      fetchApartmentShares(month),
-    ]);
-    setProfiles(profilesData);
-    setExpenses(expensesData);
-    setShares(sharesData);
+    setLoadingData(true);
+    setLoadError(null);
+    try {
+      const [profilesData, expensesData, sharesData] = await Promise.all([
+        fetchProfiles(),
+        fetchExpensesForMonth(month),
+        fetchApartmentShares(month),
+      ]);
+      setProfiles(profilesData);
+      setExpenses(expensesData);
+      setShares(sharesData);
+    } catch (err) {
+      // Sem isso, uma consulta que falha deixava a tela vazia pra sempre,
+      // parecendo carregamento infinito.
+      setLoadError((err as Error).message ?? String(err));
+    } finally {
+      setLoadingData(false);
+    }
   }, [month]);
 
   useEffect(() => {
@@ -88,7 +101,7 @@ export default function App() {
     }
   }
 
-  if (loading) return null;
+  if (loading) return <FullPageSpinner />;
   if (!profile) return <Login />;
 
   return (
@@ -96,7 +109,10 @@ export default function App() {
       <header className="border-b border-black/10 dark:border-white/10">
         <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-4">
           <div>
-            <h1 className="text-lg font-semibold">SARMONEYAPP</h1>
+            <h1 className="flex items-center gap-2 text-lg font-semibold">
+              SARMONEYAPP
+              {loadingData && <Spinner className="h-4 w-4 text-emerald-600" />}
+            </h1>
             <p className="text-xs text-neutral-500 dark:text-neutral-400">
               Olá, {profile.name}
             </p>
@@ -121,21 +137,39 @@ export default function App() {
       </header>
 
       <main className="mx-auto grid max-w-4xl gap-4 px-4 py-6 sm:grid-cols-2">
+        {loadError && (
+          <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-600 sm:col-span-2 dark:text-red-400">
+            Não deu pra carregar os dados: {loadError}{" "}
+            <button
+              onClick={loadData}
+              className="font-medium underline hover:no-underline"
+            >
+              Tentar de novo
+            </button>
+          </div>
+        )}
+
         <div className="flex flex-col gap-4">
           <SummaryCard summary={visibleSummary} />
           <section className="rounded-xl border border-black/10 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-neutral-900">
             <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
               Despesas de {monthLabel(month)}
             </h2>
-            <ExpenseList
-              expenses={visibleExpenses}
-              profiles={profiles}
-              month={month}
-              canRemove={isAdmin}
-              onRemove={handleRemove}
-              onCancelRecurring={handleCancelRecurring}
-              onEdit={handleEdit}
-            />
+            {loadingData && expenses.length === 0 ? (
+              <div className="flex justify-center py-4">
+                <Spinner className="h-6 w-6 text-neutral-400" />
+              </div>
+            ) : (
+              <ExpenseList
+                expenses={visibleExpenses}
+                profiles={profiles}
+                month={month}
+                canRemove={isAdmin}
+                onRemove={handleRemove}
+                onCancelRecurring={handleCancelRecurring}
+                onEdit={handleEdit}
+              />
+            )}
           </section>
         </div>
 
