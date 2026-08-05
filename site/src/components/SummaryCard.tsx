@@ -34,11 +34,9 @@ export function SummaryCard({ summary }: Props) {
                 </span>
                 <span className="tabular-nums">{formatCurrency(total)}</span>
               </div>
-              <div className="flex justify-between text-xs text-neutral-400">
-                <span>
-                  Apto {formatCurrency(apartmentShare)} · Individual{" "}
-                  {formatCurrency(individual)}
-                </span>
+              <div className="flex flex-col text-xs text-neutral-400">
+                <span>Apto {formatCurrency(apartmentShare)}</span>
+                <span>Individual {formatCurrency(individual)}</span>
               </div>
             </li>
           ))}
