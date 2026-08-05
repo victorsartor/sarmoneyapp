@@ -7,8 +7,10 @@ import {
   addRecurringExpense,
   addSingleExpense,
   monthsFrom,
-  updateProfilePercentuais,
+  removeApartmentShares,
+  saveApartmentShares,
 } from "../lib/data";
+import { monthLabel } from "../lib/format";
 
 const SINGLE_EXPENSE_CATEGORIES = EXPENSE_CATEGORIES.filter(
   (c): c is "Pix" | "Outro" => c === "Pix" || c === "Outro",
@@ -17,15 +19,30 @@ const SINGLE_EXPENSE_CATEGORIES = EXPENSE_CATEGORIES.filter(
 interface Props {
   month: string;
   profiles: Profile[];
+  percentuais: Record<string, number>;
+  changedThisMonth: boolean;
   createdBy: string;
   onSaved: () => void;
 }
 
-export function AdminForms({ month, profiles, createdBy, onSaved }: Props) {
+export function AdminForms({
+  month,
+  profiles,
+  percentuais,
+  changedThisMonth,
+  createdBy,
+  onSaved,
+}: Props) {
   return (
     <div className="flex flex-col gap-4">
       <ApartmentForm month={month} createdBy={createdBy} onSaved={onSaved} />
-      <SplitForm profiles={profiles} onSaved={onSaved} />
+      <SplitForm
+        month={month}
+        profiles={profiles}
+        percentuais={percentuais}
+        changedThisMonth={changedThisMonth}
+        onSaved={onSaved}
+      />
       <SingleExpenseForm
         month={month}
         profiles={profiles}
@@ -151,10 +168,16 @@ function ApartmentForm({
 }
 
 function SplitForm({
+  month,
   profiles,
+  percentuais,
+  changedThisMonth,
   onSaved,
 }: {
+  month: string;
   profiles: Profile[];
+  percentuais: Record<string, number>;
+  changedThisMonth: boolean;
   onSaved: () => void;
 }) {
   // Só guarda o que foi digitado; o resto vem do banco. Assim a lista
@@ -162,14 +185,15 @@ function SplitForm({
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
 
-  const valueOf = (p: Profile) => drafts[p.id] ?? String(p.percentual);
+  const savedOf = (p: Profile) => percentuais[p.id] ?? p.percentual;
+  const valueOf = (p: Profile) => drafts[p.id] ?? String(savedOf(p));
 
   const numbers = profiles.map((p) => Number(valueOf(p)));
   const allValid = numbers.every((n) => !Number.isNaN(n) && n >= 0 && n <= 100);
   const sum = allValid ? numbers.reduce((acc, n) => acc + n, 0) : 0;
   // Centavos de arredondamento não podem travar o botão.
   const sumOk = allValid && Math.abs(sum - 100) < 0.01;
-  const changed = profiles.some((p) => Number(valueOf(p)) !== p.percentual);
+  const changed = profiles.some((p) => Number(valueOf(p)) !== savedOf(p));
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -177,11 +201,13 @@ function SplitForm({
 
     setSaving(true);
     try {
-      await updateProfilePercentuais(
-        profiles
-          .filter((p) => Number(valueOf(p)) !== p.percentual)
-          .map((p) => ({ id: p.id, percentual: Number(valueOf(p)) })),
-      );
+      await saveApartmentShares({
+        month,
+        shares: profiles.map((p) => ({
+          personId: p.id,
+          percentual: Number(valueOf(p)),
+        })),
+      });
       setDrafts({});
       onSaved();
     } catch (err) {
@@ -191,9 +217,30 @@ function SplitForm({
     }
   }
 
+  async function handleUndo() {
+    if (!confirm(`Desfazer a mudança de divisão de ${monthLabel(month)}?`))
+      return;
+
+    setSaving(true);
+    try {
+      await removeApartmentShares(month);
+      setDrafts({});
+      onSaved();
+    } catch (err) {
+      alert(`Não deu pra desfazer: ${(err as Error).message ?? err}`);
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <Card title="Divisão do apartamento (%)">
       <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+        <p className="-mt-2 mb-1 text-xs text-neutral-500 dark:text-neutral-400">
+          Vale a partir de {monthLabel(month)} e segue nos meses seguintes até
+          ser mudada de novo. Os meses anteriores ficam como estão.
+        </p>
+
         {profiles.map((p) => (
           <label
             key={p.id}
@@ -217,9 +264,7 @@ function SplitForm({
           </label>
         ))}
 
-        <p
-          className={`text-xs ${sumOk ? "text-neutral-400" : "text-red-500"}`}
-        >
+        <p className={`text-xs ${sumOk ? "text-neutral-400" : "text-red-500"}`}>
           {allValid
             ? `Soma: ${sum.toFixed(2).replace(".", ",")}%${
                 sumOk ? "" : " — precisa fechar em 100%"
@@ -234,6 +279,17 @@ function SplitForm({
         >
           Salvar divisão
         </button>
+
+        {changedThisMonth && (
+          <button
+            type="button"
+            onClick={handleUndo}
+            disabled={saving}
+            className="text-xs text-neutral-400 hover:text-red-500 disabled:opacity-50"
+          >
+            Desfazer a mudança feita em {monthLabel(month)}
+          </button>
+        )}
       </form>
     </Card>
   );

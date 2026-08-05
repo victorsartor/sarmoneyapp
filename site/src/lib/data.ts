@@ -1,5 +1,10 @@
 import { supabase } from "./supabase";
-import type { Expense, ExpenseCategory, Profile } from "../types";
+import type {
+  ApartmentShare,
+  Expense,
+  ExpenseCategory,
+  Profile,
+} from "../types";
 
 interface ExpenseRow {
   id: string;
@@ -13,6 +18,12 @@ interface ExpenseRow {
   installment_total: number | null;
   purchase_date: string | null;
   recurring: boolean;
+}
+
+interface ShareRow {
+  person_id: string;
+  month: string;
+  percentual: number;
 }
 
 const EXPENSE_FIELDS =
@@ -54,25 +65,56 @@ export async function fetchProfiles(): Promise<Profile[]> {
   return data;
 }
 
-export async function updateProfilePercentuais(
-  updates: { id: string; percentual: number }[],
-) {
-  for (const { id, percentual } of updates) {
-    const { data, error } = await supabase
-      .from("profiles")
-      .update({ percentual })
-      .eq("id", id)
-      .select("id");
+export async function fetchApartmentShares(
+  uptoMonth: string,
+): Promise<ApartmentShare[]> {
+  // Traz só o que já entrou em vigor até o mês visualizado — mudanças
+  // marcadas pra meses futuros não podem mexer no passado.
+  const { data, error } = await supabase
+    .from("apartment_shares")
+    .select("person_id, month, percentual")
+    .lte("month", uptoMonth);
 
-    if (error) throw error;
-    // Com RLS ligado, um update sem policy volta sem erro e sem linha —
-    // melhor avisar do que fingir que salvou.
-    if (!data || data.length === 0) {
-      throw new Error(
-        "o banco não deixou alterar o percentual (falta a policy de update na tabela profiles).",
-      );
-    }
+  if (error) throw error;
+  return (data as ShareRow[]).map((row) => ({
+    personId: row.person_id,
+    month: row.month,
+    percentual: row.percentual,
+  }));
+}
+
+export async function saveApartmentShares(params: {
+  month: string;
+  shares: { personId: string; percentual: number }[];
+}) {
+  const rows = params.shares.map((share) => ({
+    person_id: share.personId,
+    month: params.month,
+    percentual: share.percentual,
+  }));
+
+  const { data, error } = await supabase
+    .from("apartment_shares")
+    .upsert(rows, { onConflict: "person_id,month" })
+    .select("person_id");
+
+  if (error) throw error;
+  // Com RLS ligado, gravação sem policy volta sem erro e sem linha —
+  // melhor avisar do que fingir que salvou.
+  if (!data || data.length === 0) {
+    throw new Error(
+      "o banco não deixou salvar a divisão (confere as policies da tabela apartment_shares).",
+    );
   }
+}
+
+export async function removeApartmentShares(month: string) {
+  const { error } = await supabase
+    .from("apartment_shares")
+    .delete()
+    .eq("month", month);
+
+  if (error) throw error;
 }
 
 export async function fetchExpensesForMonth(month: string): Promise<Expense[]> {

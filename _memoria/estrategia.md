@@ -58,6 +58,11 @@ fecha em 100%. Corrigida também a regra da parcela do cartão: a primeira
 parcela cai na fatura do mês seguinte ao da compra, não no mês em que a
 compra foi feita (fechamento de fatura).
 
+Restrição de uso (2026-08-05): os pais acessam o app principalmente pelo
+celular, então o layout precisa funcionar bem em tela estreita (~375px).
+Cabeçalho e lista de despesas ajustados pra empilhar no celular e voltar
+a uma linha só no desktop.
+
 ## Prioridade principal
 
 Gargalo: falta de constância / preguiça pra tocar o projeto sozinho. A

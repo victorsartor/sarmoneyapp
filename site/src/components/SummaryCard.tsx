@@ -23,13 +23,13 @@ export function SummaryCard({ summary }: Props) {
         <p className="text-sm text-neutral-400">Nenhum perfil cadastrado.</p>
       ) : (
         <ul className="flex flex-col gap-3">
-          {summary.perPerson.map(({ profile, apartmentShare, individual, total }) => (
+          {summary.perPerson.map(({ profile, percentual, apartmentShare, individual, total }) => (
             <li key={profile.id} className="text-sm">
               <div className="flex items-center justify-between font-medium">
                 <span>
                   {profile.name}{" "}
                   <span className="text-neutral-400">
-                    ({profile.percentual}% do apto)
+                    ({percentual}% do apto)
                   </span>
                 </span>
                 <span className="tabular-nums">{formatCurrency(total)}</span>

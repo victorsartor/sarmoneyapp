@@ -73,8 +73,11 @@ export function ExpenseList({
     <>
       <ul className="flex flex-col divide-y divide-black/5 dark:divide-white/10">
         {sorted.map((expense) => (
-          <li key={expense.id} className="flex items-center gap-3 py-2 text-sm">
-            <span className="flex-1 truncate">
+          <li
+            key={expense.id}
+            className="flex flex-col gap-1.5 py-3 text-sm sm:flex-row sm:items-center sm:gap-3 sm:py-2"
+          >
+            <span className="min-w-0 flex-1 truncate">
               <span className="font-medium">{expense.description}</span>
               <span className="ml-2 text-xs text-neutral-400">
                 {personName(expense.personId)}
@@ -85,30 +88,32 @@ export function ExpenseList({
                 {expense.recurring ? " · assinatura" : ""}
               </span>
             </span>
-            <span className="rounded-full bg-black/5 px-2 py-0.5 text-xs text-neutral-600 dark:bg-white/10 dark:text-neutral-300">
-              {expense.category}
-            </span>
-            <span className="w-24 text-right tabular-nums">
-              {formatCurrency(expense.amount)}
-            </span>
-            {canRemove && (
-              <span className="flex items-center gap-2">
-                <button
-                  onClick={() => setEditingExpense(expense)}
-                  className="text-neutral-400 hover:text-emerald-500"
-                  aria-label={`Editar ${expense.description}`}
-                >
-                  ✎
-                </button>
-                <button
-                  onClick={() => handleRemoveClick(expense)}
-                  className="text-neutral-400 hover:text-red-500"
-                  aria-label={`Remover ${expense.description}`}
-                >
-                  ×
-                </button>
+            <span className="flex items-center justify-between gap-3 sm:justify-end">
+              <span className="rounded-full bg-black/5 px-2 py-0.5 text-xs text-neutral-600 dark:bg-white/10 dark:text-neutral-300">
+                {expense.category}
               </span>
-            )}
+              <span className="w-20 text-right tabular-nums sm:w-24">
+                {formatCurrency(expense.amount)}
+              </span>
+              {canRemove && (
+                <span className="flex items-center gap-1">
+                  <button
+                    onClick={() => setEditingExpense(expense)}
+                    className="rounded-lg p-2 text-neutral-400 hover:text-emerald-500"
+                    aria-label={`Editar ${expense.description}`}
+                  >
+                    ✎
+                  </button>
+                  <button
+                    onClick={() => handleRemoveClick(expense)}
+                    className="rounded-lg p-2 text-neutral-400 hover:text-red-500"
+                    aria-label={`Remover ${expense.description}`}
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+            </span>
           </li>
         ))}
       </ul>

@@ -6,37 +6,46 @@ import { SummaryCard } from "./components/SummaryCard";
 import { ExpenseList } from "./components/ExpenseList";
 import {
   cancelRecurringExpense,
+  fetchApartmentShares,
   fetchExpensesForMonth,
   fetchProfiles,
   removeExpense,
   updateExpense,
 } from "./lib/data";
-import { computeMonthSummary } from "./lib/summary";
+import { computeMonthSummary, percentuaisForMonth } from "./lib/summary";
 import { currentMonthKey, monthLabel } from "./lib/format";
-import type { Expense, Profile } from "./types";
+import type { ApartmentShare, Expense, Profile } from "./types";
 
 export default function App() {
   const { loading, profile, signOut } = useAuth();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [shares, setShares] = useState<ApartmentShare[]>([]);
   const [month, setMonth] = useState(currentMonthKey());
 
   const loadData = useCallback(async () => {
-    const [profilesData, expensesData] = await Promise.all([
+    const [profilesData, expensesData, sharesData] = await Promise.all([
       fetchProfiles(),
       fetchExpensesForMonth(month),
+      fetchApartmentShares(month),
     ]);
     setProfiles(profilesData);
     setExpenses(expensesData);
+    setShares(sharesData);
   }, [month]);
 
   useEffect(() => {
     if (profile) loadData();
   }, [profile, loadData]);
 
+  const percentuais = useMemo(
+    () => percentuaisForMonth(profiles, shares, month),
+    [profiles, shares, month],
+  );
+
   const summary = useMemo(
-    () => computeMonthSummary(profiles, expenses),
-    [profiles, expenses],
+    () => computeMonthSummary(profiles, expenses, percentuais),
+    [profiles, expenses, percentuais],
   );
 
   const isAdmin = profile?.role === "admin";
@@ -85,7 +94,7 @@ export default function App() {
   return (
     <div className="min-h-screen">
       <header className="border-b border-black/10 dark:border-white/10">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
+        <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-4">
           <div>
             <h1 className="text-lg font-semibold">SARMONEYAPP</h1>
             <p className="text-xs text-neutral-500 dark:text-neutral-400">
@@ -93,19 +102,17 @@ export default function App() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <label htmlFor="month" className="text-sm text-neutral-500">
-              {monthLabel(month)}
-            </label>
             <input
               id="month"
+              aria-label={monthLabel(month)}
               type="month"
               value={month}
               onChange={(e) => setMonth(e.target.value)}
-              className="rounded-lg border border-black/10 bg-transparent px-2 py-1 text-sm dark:border-white/10"
+              className="rounded-lg border border-black/10 bg-transparent px-2 py-2 text-sm dark:border-white/10"
             />
             <button
               onClick={signOut}
-              className="text-sm text-neutral-400 hover:text-red-500"
+              className="rounded-lg px-2 py-2 text-sm text-neutral-400 hover:text-red-500"
             >
               Sair
             </button>
@@ -137,6 +144,8 @@ export default function App() {
             <AdminForms
               month={month}
               profiles={profiles}
+              percentuais={percentuais}
+              changedThisMonth={shares.some((s) => s.month === month)}
               createdBy={profile.id}
               onSaved={loadData}
             />

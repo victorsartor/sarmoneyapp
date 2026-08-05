@@ -4,6 +4,14 @@ export interface Profile {
   id: string;
   name: string;
   role: Role;
+  percentual: number; // divisão original, usada até a 1ª mudança registrada
+}
+
+// Mudança na divisão do apartamento. Vale do mês registrado em diante,
+// até existir outra mudança mais nova.
+export interface ApartmentShare {
+  personId: string;
+  month: string; // 'YYYY-MM'
   percentual: number;
 }
 
