@@ -250,24 +250,33 @@ export async function addCardPurchase(params: {
 }
 
 export async function updateExpense(
-  id: string,
+  expense: Pick<Expense, "id" | "purchaseGroupId">,
   changes: {
     description: string;
     amount: number;
     personId?: string | null;
     purchaseDate?: string | null;
   },
+  // "series" muda todas as parcelas do grupo (mudou o preço do
+  // apartamento, corrigiu valor errado); "single" mexe só no mês aberto.
+  scope: "single" | "series" = "single",
 ) {
-  const { error } = await supabase
-    .from("expenses")
-    .update({
-      description: changes.description,
-      amount: changes.amount,
-      ...(changes.personId !== undefined ? { person_id: changes.personId } : {}),
-      ...(changes.purchaseDate !== undefined ? { purchase_date: changes.purchaseDate } : {}),
-    })
-    .eq("id", id);
+  const patch = {
+    description: changes.description,
+    amount: changes.amount,
+    ...(changes.personId !== undefined ? { person_id: changes.personId } : {}),
+    ...(changes.purchaseDate !== undefined ? { purchase_date: changes.purchaseDate } : {}),
+  };
 
+  const query =
+    scope === "series" && expense.purchaseGroupId
+      ? supabase
+          .from("expenses")
+          .update(patch)
+          .eq("purchase_group_id", expense.purchaseGroupId)
+      : supabase.from("expenses").update(patch).eq("id", expense.id);
+
+  const { error } = await query;
   if (error) throw error;
 }
 

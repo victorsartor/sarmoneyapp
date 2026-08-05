@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Expense, Profile } from "../types";
-import { formatCurrency, formatDay } from "../lib/format";
+import { formatCurrency, formatDay, monthLabel } from "../lib/format";
 
 interface Props {
   expenses: Expense[];
@@ -12,6 +12,7 @@ interface Props {
   onEdit: (
     expense: Expense,
     changes: { description: string; amount: number; personId?: string | null; purchaseDate?: string | null },
+    scope: "single" | "series",
   ) => void;
 }
 
@@ -123,8 +124,8 @@ export function ExpenseList({
           expense={editingExpense}
           profiles={profiles}
           onCancel={() => setEditingExpense(null)}
-          onSave={(changes) => {
-            onEdit(editingExpense, changes);
+          onSave={(changes, scope) => {
+            onEdit(editingExpense, changes, scope);
             setEditingExpense(null);
           }}
         />
@@ -142,29 +143,46 @@ function EditExpenseModal({
   expense: Expense;
   profiles: Profile[];
   onCancel: () => void;
-  onSave: (changes: {
-    description: string;
-    amount: number;
-    personId?: string | null;
-    purchaseDate?: string | null;
-  }) => void;
+  onSave: (
+    changes: {
+      description: string;
+      amount: number;
+      personId?: string | null;
+      purchaseDate?: string | null;
+    },
+    scope: "single" | "series",
+  ) => void;
 }) {
   const [description, setDescription] = useState(expense.description);
   const [amount, setAmount] = useState(String(expense.amount));
   const [personId, setPersonId] = useState(expense.personId ?? "");
   const [purchaseDate, setPurchaseDate] = useState(expense.purchaseDate ?? "");
 
+  // Parcelado (apartamento ou cartão): mudar o preço quase sempre vale
+  // pra série toda, então essa é a opção marcada por padrão.
+  const isSeries = Boolean(
+    expense.purchaseGroupId &&
+      expense.installmentTotal &&
+      expense.installmentTotal > 1,
+  );
+  const [scope, setScope] = useState<"single" | "series">(
+    isSeries ? "series" : "single",
+  );
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const value = Number(amount);
     if (!description.trim() || !amount || Number.isNaN(value)) return;
 
-    onSave({
-      description: description.trim(),
-      amount: value,
-      ...(expense.personId !== null ? { personId: personId || null } : {}),
-      ...(expense.purchaseDate !== null ? { purchaseDate: purchaseDate || null } : {}),
-    });
+    onSave(
+      {
+        description: description.trim(),
+        amount: value,
+        ...(expense.personId !== null ? { personId: personId || null } : {}),
+        ...(expense.purchaseDate !== null ? { purchaseDate: purchaseDate || null } : {}),
+      },
+      scope,
+    );
   }
 
   return (
@@ -210,6 +228,28 @@ function EditExpenseModal({
               className="rounded-lg border border-black/10 bg-transparent px-2 py-1 text-sm dark:border-white/10"
             />
           )}
+
+          {isSeries && (
+            <div className="mt-1 flex flex-col gap-1 text-xs text-neutral-500 dark:text-neutral-400">
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  checked={scope === "series"}
+                  onChange={() => setScope("series")}
+                />
+                Vale para todas as {expense.installmentTotal} parcelas
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  checked={scope === "single"}
+                  onChange={() => setScope("single")}
+                />
+                Vale só para {monthLabel(expense.month)}
+              </label>
+            </div>
+          )}
+
           <div className="mt-2 flex justify-end gap-2">
             <button
               type="button"
