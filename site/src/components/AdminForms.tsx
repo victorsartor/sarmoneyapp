@@ -6,6 +6,8 @@ import {
   addCardPurchase,
   addRecurringExpense,
   addSingleExpense,
+  monthsFrom,
+  updateProfilePercentuais,
 } from "../lib/data";
 
 const SINGLE_EXPENSE_CATEGORIES = EXPENSE_CATEGORIES.filter(
@@ -23,6 +25,7 @@ export function AdminForms({ month, profiles, createdBy, onSaved }: Props) {
   return (
     <div className="flex flex-col gap-4">
       <ApartmentForm month={month} createdBy={createdBy} onSaved={onSaved} />
+      <SplitForm profiles={profiles} onSaved={onSaved} />
       <SingleExpenseForm
         month={month}
         profiles={profiles}
@@ -141,6 +144,95 @@ function ApartmentForm({
           className="col-span-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
         >
           Salvar parcelas
+        </button>
+      </form>
+    </Card>
+  );
+}
+
+function SplitForm({
+  profiles,
+  onSaved,
+}: {
+  profiles: Profile[];
+  onSaved: () => void;
+}) {
+  // Só guarda o que foi digitado; o resto vem do banco. Assim a lista
+  // pode recarregar sem apagar o que o Jackson está editando.
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState(false);
+
+  const valueOf = (p: Profile) => drafts[p.id] ?? String(p.percentual);
+
+  const numbers = profiles.map((p) => Number(valueOf(p)));
+  const allValid = numbers.every((n) => !Number.isNaN(n) && n >= 0 && n <= 100);
+  const sum = allValid ? numbers.reduce((acc, n) => acc + n, 0) : 0;
+  // Centavos de arredondamento não podem travar o botão.
+  const sumOk = allValid && Math.abs(sum - 100) < 0.01;
+  const changed = profiles.some((p) => Number(valueOf(p)) !== p.percentual);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!sumOk || !changed) return;
+
+    setSaving(true);
+    try {
+      await updateProfilePercentuais(
+        profiles
+          .filter((p) => Number(valueOf(p)) !== p.percentual)
+          .map((p) => ({ id: p.id, percentual: Number(valueOf(p)) })),
+      );
+      setDrafts({});
+      onSaved();
+    } catch (err) {
+      alert(`Não deu pra salvar: ${(err as Error).message ?? err}`);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <Card title="Divisão do apartamento (%)">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+        {profiles.map((p) => (
+          <label
+            key={p.id}
+            className="flex items-center justify-between gap-2 text-sm"
+          >
+            {p.name}
+            <span className="flex items-center gap-1">
+              <input
+                value={valueOf(p)}
+                onChange={(e) =>
+                  setDrafts((prev) => ({ ...prev, [p.id]: e.target.value }))
+                }
+                type="number"
+                min={0}
+                max={100}
+                step="0.01"
+                className="w-24 rounded-lg border border-black/10 bg-transparent px-3 py-2 text-right text-sm tabular-nums dark:border-white/10"
+              />
+              <span className="text-neutral-400">%</span>
+            </span>
+          </label>
+        ))}
+
+        <p
+          className={`text-xs ${sumOk ? "text-neutral-400" : "text-red-500"}`}
+        >
+          {allValid
+            ? `Soma: ${sum.toFixed(2).replace(".", ",")}%${
+                sumOk ? "" : " — precisa fechar em 100%"
+              }`
+            : "Preencha todos os percentuais entre 0 e 100."}
+        </p>
+
+        <button
+          type="submit"
+          disabled={saving || !sumOk || !changed}
+          className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+        >
+          Salvar divisão
         </button>
       </form>
     </Card>
@@ -314,7 +406,8 @@ function CardPurchaseForm({
           category: "Cartão",
           description: description.trim(),
           amount: amountValue,
-          startMonth: purchaseDate.slice(0, 7),
+          // Cartão fecha na fatura do mês seguinte, não no mês da compra.
+          startMonth: monthsFrom(purchaseDate.slice(0, 7), 1),
           personId,
           createdBy,
           purchaseDate,

@@ -13,10 +13,11 @@ Vite + TypeScript + Tailwind v4.
 
 Regra de negócio definida (2026-07-20): três logins fixos — Jackson
 (admin, único que lança despesas), Janine e Victor (só acompanham).
-Apartamento é rateado automaticamente 48% Jackson / 31% Janine / 21%
-Victor. Cartão é comprado parcelado e atribuído a uma pessoa — as
-parcelas aparecem sozinhas nos meses seguintes (uma por mês). Pix/Outro
-é lançamento avulso atribuído a uma pessoa, direto no mês.
+Apartamento é rateado automaticamente por percentual entre os três
+(começou 48% Jackson / 31% Janine / 21% Victor). Cartão é comprado
+parcelado e atribuído a uma pessoa — as parcelas aparecem sozinhas nos
+meses seguintes (uma por mês). Pix/Outro é lançamento avulso atribuído a
+uma pessoa, direto no mês.
 
 Como os três acessam de aparelhos diferentes, o app precisa de backend
 compartilhado — decidido usar Supabase (Postgres + Auth, plano grátis).
@@ -49,6 +50,13 @@ excluir despesas funcionando (confirmação antes de excluir). Corrigido
 bug em que o dropdown de pessoa não sincronizava com os perfis
 carregados — "Salvar" silenciosamente não fazia nada pra quem não fosse
 a pessoa padrão do formulário.
+
+Progresso (2026-08-05): percentuais do rateio do apartamento deixaram
+de ser fixos no banco — agora tem um formulário ("Divisão do apartamento
+(%)") pra o admin editar a qualquer momento, com validação de que a soma
+fecha em 100%. Corrigida também a regra da parcela do cartão: a primeira
+parcela cai na fatura do mês seguinte ao da compra, não no mês em que a
+compra foi feita (fechamento de fatura).
 
 ## Prioridade principal
 

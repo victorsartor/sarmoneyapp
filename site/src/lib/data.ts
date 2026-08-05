@@ -34,7 +34,7 @@ function fromRow(row: ExpenseRow): Expense {
   };
 }
 
-function monthsFrom(startMonth: string, offset: number): string {
+export function monthsFrom(startMonth: string, offset: number): string {
   const [year, month] = startMonth.split("-").map(Number);
   const date = new Date(year, month - 1 + offset, 1);
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
@@ -52,6 +52,27 @@ export async function fetchProfiles(): Promise<Profile[]> {
 
   if (error) throw error;
   return data;
+}
+
+export async function updateProfilePercentuais(
+  updates: { id: string; percentual: number }[],
+) {
+  for (const { id, percentual } of updates) {
+    const { data, error } = await supabase
+      .from("profiles")
+      .update({ percentual })
+      .eq("id", id)
+      .select("id");
+
+    if (error) throw error;
+    // Com RLS ligado, um update sem policy volta sem erro e sem linha —
+    // melhor avisar do que fingir que salvou.
+    if (!data || data.length === 0) {
+      throw new Error(
+        "o banco não deixou alterar o percentual (falta a policy de update na tabela profiles).",
+      );
+    }
+  }
 }
 
 export async function fetchExpensesForMonth(month: string): Promise<Expense[]> {
@@ -166,7 +187,8 @@ export async function addCardPurchase(params: {
   createdBy: string;
 }) {
   const purchaseGroupId = crypto.randomUUID();
-  const startMonth = params.purchaseDate.slice(0, 7);
+  // Compra no cartão fecha na fatura do mês seguinte, não no mês da compra.
+  const startMonth = monthsFrom(params.purchaseDate.slice(0, 7), 1);
 
   const rows = Array.from({ length: params.installments }, (_, index) => ({
     category: "Cartão" as const,
