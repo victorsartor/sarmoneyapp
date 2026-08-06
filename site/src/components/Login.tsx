@@ -27,7 +27,7 @@ export function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-sm rounded-xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-neutral-900">
+      <div className="animate-pop-in w-full max-w-sm rounded-xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-neutral-900">
         <h1 className="mb-1 text-lg font-semibold">SARMONEYAPP</h1>
         <p className="mb-6 text-sm text-neutral-500 dark:text-neutral-400">
           Quem é você?
@@ -40,9 +40,10 @@ export function Login() {
               type="button"
               onClick={() => setSelected(person)}
               className={
-                selected?.email === person.email
-                  ? "rounded-lg border border-emerald-600 bg-emerald-600/10 px-2 py-2 text-sm font-medium text-emerald-700 dark:text-emerald-400"
-                  : "rounded-lg border border-black/10 px-2 py-2 text-sm hover:border-black/30 dark:border-white/10"
+                "rounded-lg px-2 py-2 text-sm transition-all duration-200 active:scale-95 " +
+                (selected?.email === person.email
+                  ? "border border-emerald-600 bg-emerald-600/10 font-medium text-emerald-700 shadow-sm dark:text-emerald-400"
+                  : "border border-black/10 hover:border-black/30 hover:bg-black/[0.03] dark:border-white/10 dark:hover:border-white/30 dark:hover:bg-white/[0.04]")
               }
             >
               {person.name}
@@ -62,7 +63,7 @@ export function Login() {
           <button
             type="submit"
             disabled={!selected || !password || loading}
-            className="flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+            className="flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-all duration-150 hover:bg-emerald-700 hover:shadow-md active:scale-[0.98] disabled:opacity-50 disabled:hover:shadow-none"
           >
             {loading && <Spinner className="h-4 w-4" />}
             {loading ? "Entrando..." : "Entrar"}

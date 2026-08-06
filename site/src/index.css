@@ -43,3 +43,95 @@ option {
     color: #e5e7eb;
   }
 }
+
+/* ---------------------------------------------------------------
+   Animações. Tudo curto (150-300ms) e discreto — a ideia é dar
+   sensação de resposta, não chamar atenção. O bloco de
+   prefers-reduced-motion no fim desliga tudo pra quem pediu menos
+   movimento no sistema.
+   --------------------------------------------------------------- */
+
+@keyframes fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-fade-rise {
+  animation: fade-rise 0.35s ease-out both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out both;
+}
+
+.animate-pop-in {
+  animation: pop-in 0.2s ease-out both;
+}
+
+/* Escalona a entrada das linhas do resumo: cada uma começa um
+   pouquinho depois da anterior, o que dá o efeito de cascata. */
+.stagger > * {
+  animation: fade-rise 0.35s ease-out both;
+}
+.stagger > *:nth-child(1) { animation-delay: 0.04s; }
+.stagger > *:nth-child(2) { animation-delay: 0.08s; }
+.stagger > *:nth-child(3) { animation-delay: 0.12s; }
+.stagger > *:nth-child(4) { animation-delay: 0.16s; }
+.stagger > *:nth-child(5) { animation-delay: 0.2s; }
+.stagger > *:nth-child(n + 6) { animation-delay: 0.24s; }
+
+/* Campos: transição suave e anel de foco verde, aplicado de uma vez em
+   vez de repetir as classes em cada input do projeto. */
+input,
+select,
+textarea {
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  border-color: rgb(5 150 105 / 0.6);
+  box-shadow: 0 0 0 3px rgb(5 150 105 / 0.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

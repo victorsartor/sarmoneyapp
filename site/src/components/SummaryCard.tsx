@@ -7,7 +7,7 @@ interface Props {
 
 export function SummaryCard({ summary }: Props) {
   return (
-    <section className="rounded-xl border border-black/10 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-neutral-900">
+    <section className="animate-fade-rise rounded-xl border border-black/10 bg-white p-5 shadow-sm transition-shadow duration-300 hover:shadow-md dark:border-white/10 dark:bg-neutral-900">
       <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
         Resumo do mês
       </h2>
@@ -22,9 +22,12 @@ export function SummaryCard({ summary }: Props) {
       {summary.perPerson.length === 0 ? (
         <p className="text-sm text-neutral-400">Nenhum perfil cadastrado.</p>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <ul className="stagger flex flex-col gap-1">
           {summary.perPerson.map(({ profile, percentual, apartmentShare, individual, total }) => (
-            <li key={profile.id} className="text-sm">
+            <li
+              key={profile.id}
+              className="-mx-2 rounded-lg px-2 py-1.5 text-sm transition-colors duration-200 hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
+            >
               <div className="flex items-center justify-between font-medium">
                 <span>{profile.name}</span>
                 <span className="tabular-nums">{formatCurrency(total)}</span>

@@ -128,7 +128,7 @@ export default function App() {
             />
             <button
               onClick={signOut}
-              className="rounded-lg px-2 py-2 text-sm text-neutral-400 hover:text-red-500"
+              className="rounded-lg px-2 py-2 text-sm text-neutral-400 transition-colors duration-150 hover:bg-red-500/10 hover:text-red-500"
             >
               Sair
             </button>
@@ -151,7 +151,7 @@ export default function App() {
 
         <div className="flex flex-col gap-4">
           <SummaryCard summary={visibleSummary} />
-          <section className="rounded-xl border border-black/10 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-neutral-900">
+          <section className="animate-fade-rise rounded-xl border border-black/10 bg-white p-5 shadow-sm transition-shadow duration-300 hover:shadow-md dark:border-white/10 dark:bg-neutral-900">
             <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
               Despesas de {monthLabel(month)}
             </h2>

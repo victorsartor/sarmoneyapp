@@ -34,7 +34,7 @@ export function AdminForms({
   onSaved,
 }: Props) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="stagger flex flex-col gap-4">
       <ApartmentForm month={month} createdBy={createdBy} onSaved={onSaved} />
       <SplitForm
         month={month}
@@ -61,7 +61,7 @@ export function AdminForms({
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-xl border border-black/10 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-neutral-900">
+    <section className="rounded-xl border border-black/10 bg-white p-5 shadow-sm transition-shadow duration-300 hover:shadow-md dark:border-white/10 dark:bg-neutral-900">
       <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
         {title}
       </h2>
@@ -158,7 +158,7 @@ function ApartmentForm({
         <button
           type="submit"
           disabled={saving}
-          className="col-span-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+          className="col-span-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-all duration-150 hover:bg-emerald-700 hover:shadow-md active:scale-[0.98] disabled:opacity-50 disabled:hover:shadow-none"
         >
           Salvar parcelas
         </button>
@@ -275,7 +275,7 @@ function SplitForm({
         <button
           type="submit"
           disabled={saving || !sumOk || !changed}
-          className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+          className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-all duration-150 hover:bg-emerald-700 hover:shadow-md active:scale-[0.98] disabled:opacity-50 disabled:hover:shadow-none"
         >
           Salvar divisão
         </button>
@@ -407,7 +407,7 @@ function SingleExpenseForm({
         <button
           type="submit"
           disabled={saving}
-          className="col-span-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+          className="col-span-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-all duration-150 hover:bg-emerald-700 hover:shadow-md active:scale-[0.98] disabled:opacity-50 disabled:hover:shadow-none"
         >
           Salvar
         </button>
@@ -550,7 +550,7 @@ function CardPurchaseForm({
         <button
           type="submit"
           disabled={saving}
-          className="col-span-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+          className="col-span-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-all duration-150 hover:bg-emerald-700 hover:shadow-md active:scale-[0.98] disabled:opacity-50 disabled:hover:shadow-none"
         >
           {recurring ? "Salvar assinatura" : "Salvar parcelas"}
         </button>

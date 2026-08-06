@@ -96,9 +96,10 @@ export function ExpenseList({
               onClick={() => togglePerson(p.id)}
               aria-pressed={isPersonSelected(p.id)}
               className={
-                isPersonSelected(p.id)
-                  ? "rounded-full bg-emerald-600 px-3 py-1 text-xs font-medium text-white hover:bg-emerald-700"
-                  : "rounded-full border border-black/10 px-3 py-1 text-xs text-neutral-500 hover:border-black/30 dark:border-white/10 dark:hover:border-white/30"
+                "rounded-full px-3 py-1 text-xs transition-all duration-200 active:scale-95 " +
+                (isPersonSelected(p.id)
+                  ? "bg-emerald-600 font-medium text-white shadow-sm hover:bg-emerald-700"
+                  : "border border-black/10 text-neutral-500 hover:border-black/30 dark:border-white/10 dark:hover:border-white/30")
               }
             >
               {p.name}
@@ -116,11 +117,11 @@ export function ExpenseList({
           Ninguém selecionado tem despesa nesse mês.
         </p>
       ) : (
-        <ul className="flex flex-col divide-y divide-black/5 dark:divide-white/10">
+        <ul className="stagger flex flex-col divide-y divide-black/5 dark:divide-white/10">
           {sorted.map((expense) => (
             <li
               key={expense.id}
-              className="flex flex-col gap-1.5 py-3 text-sm sm:flex-row sm:items-center sm:gap-3 sm:py-2"
+              className="-mx-2 flex flex-col gap-1.5 rounded-lg px-2 py-3 text-sm transition-colors duration-200 hover:bg-black/[0.03] sm:flex-row sm:items-center sm:gap-3 sm:py-2 dark:hover:bg-white/[0.04]"
             >
               <span className="min-w-0 flex-1 truncate">
                 <span className="font-medium">{expense.description}</span>
@@ -144,14 +145,14 @@ export function ExpenseList({
                   <span className="flex items-center gap-1">
                     <button
                       onClick={() => setEditingExpense(expense)}
-                      className="rounded-lg p-2 text-neutral-400 hover:text-emerald-500"
+                      className="rounded-lg p-2 text-neutral-400 transition-all duration-150 hover:scale-110 hover:bg-emerald-500/10 hover:text-emerald-500 active:scale-95"
                       aria-label={`Editar ${expense.description}`}
                     >
                       ✎
                     </button>
                     <button
                       onClick={() => handleRemoveClick(expense)}
-                      className="rounded-lg p-2 text-neutral-400 hover:text-red-500"
+                      className="rounded-lg p-2 text-neutral-400 transition-all duration-150 hover:scale-110 hover:bg-red-500/10 hover:text-red-500 active:scale-95"
                       aria-label={`Remover ${expense.description}`}
                     >
                       ×
@@ -218,8 +219,8 @@ function EditExpenseModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-sm rounded-xl border border-black/10 bg-white p-5 shadow-lg dark:border-white/10 dark:bg-neutral-900">
+    <div className="animate-fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
+      <div className="animate-pop-in w-full max-w-sm rounded-xl border border-black/10 bg-white p-5 shadow-lg dark:border-white/10 dark:bg-neutral-900">
         <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
           Editar despesa
         </h3>
@@ -271,13 +272,13 @@ function EditExpenseModal({
             <button
               type="button"
               onClick={onCancel}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+              className="rounded-lg px-4 py-2 text-sm font-medium text-neutral-500 transition-colors duration-150 hover:text-neutral-700 dark:hover:text-neutral-300"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+              className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-all duration-150 hover:bg-emerald-700 hover:shadow-md active:scale-95"
             >
               Salvar
             </button>
