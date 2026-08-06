@@ -1,4 +1,4 @@
-﻿---
+---
 name: novo-projeto
 description: >
   Cria uma pasta de projeto nova com `CLAUDE.md` dedicado, depois de uma entrevista curta sobre
@@ -31,9 +31,18 @@ Baseado na resposta 2:
 
 Criar a pasta com:
 
-- `CLAUDE.md` do projeto (instruções herdadas + específicas)
+- `CLAUDE.md` do projeto (instruções específicas + regra de isolamento)
 - `briefing.md` (com o que foi coletado na entrevista)
+- `identidade/` — **sempre**, pra cliente. É a marca DELE (cores, logo,
+  fontes, tom). Começa com um `design-guide.md` em branco a preencher
+- `referencias/` — **sempre**, pra cliente. Material de origem: dados
+  extraídos do site atual, prints, textos, tabela de preços
 - Subpastas conforme as entregas mencionadas (ex: se mencionou "ads e conteúdo", criar `ads/` e `conteudo/`)
+
+**O que NÃO duplicar por cliente:** `scripts/` e `templates/` ficam só na
+raiz. São ferramenta, iguais pra todo mundo — copiar significa manter N
+cópias que desandam com o tempo. A regra é: **dado duplica, ferramenta
+compartilha.**
 
 ### Passo 4 — Conteúdo do `CLAUDE.md` do projeto
 
@@ -60,12 +69,30 @@ Template:
 
 ## Onde salvar o que
 
-- Briefings e contexto: nessa pasta na raiz
+- Briefing e contexto: nessa pasta
+- Marca do cliente: `identidade/`
+- Material de origem (site atual, prints, preços): `referencias/`
 - Entregas: cada subpasta criada (ads/, conteudo/, site/, etc.)
 
-## Contexto que herda da raiz
+## ⚠️ Isolamento — leia antes de produzir qualquer coisa
 
-Esse projeto herda automaticamente o tom de voz, marca e contexto do negócio definidos em `_memoria/` e `identidade/` da raiz. Não duplicar essas informações aqui.
+**A marca daqui é a do [Nome], não a da agência.**
+
+- Identidade visual: usar `identidade/` DESTA pasta. O
+  `identidade/design-guide.md` da raiz é a marca do Nick + Sartor e
+  **não entra** em entrega de cliente.
+- Tom de voz: quem fala é o [Nome] pro público dele. O tom da agência
+  (definido no `~/.claude/CLAUDE.md`) vale pra conversa com o Nick,
+  não pro material do cliente.
+- Se faltar dado de marca, **perguntar ou extrair das fontes do
+  cliente** (site, Instagram, logo). Nunca preencher com o padrão da
+  raiz nem inventar.
+- Não ler nem reaproveitar material de outro cliente em `clientes/`.
+
+## O que herda da raiz
+
+Só regra de operação: como o MazyOS trabalha, fluxo de skills,
+convenção de pastas. Nada de marca, tom ou dado de negócio.
 
 ## Específico desse projeto
 
@@ -87,6 +114,9 @@ Quando for trabalhar nesse projeto, abre o terminal já dentro da pasta — assi
 
 ## Regras
 
+- **Conferir a grafia do nome antes de criar a pasta.** Se o cliente tem
+  site ou Instagram, abrir e confirmar como eles escrevem. Renomear pasta
+  depois dá retrabalho (já aconteceu: "Academia Elite" → "Academia Ellite")
 - Nome de pasta: usar o nome como o usuário falou, sem normalizar agressivamente (manter acentos, espaços viram hífen, mas o nome reconhecível)
 - Não criar subpastas que não foram pedidas ("pra organizar melhor"). Só o que foi mencionado nas entregas
 - Se o cliente/projeto já existe (pasta com mesmo nome), avisar e perguntar se é pra adicionar dentro ou criar com sufixo

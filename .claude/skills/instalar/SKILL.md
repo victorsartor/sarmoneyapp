@@ -1,4 +1,4 @@
-﻿---
+---
 name: instalar
 description: >
   Instala o MazyOS no negócio do usuário. Entrevista sobre empresa, tom de voz,
@@ -16,7 +16,7 @@ Esse é o primeiro comando que o usuário roda depois de clonar o repositório. 
 
 ### 1. Nome da pasta
 
-Conferir o nome da pasta atual (`basename "$(pwd)"`). Se for `mazyos`, `MazyOS`, `MazyOS-main`, `mazyos-main`, `sarmoneyapp`, `sarmoneyapp-main` ou variação genérica:
+Conferir o nome da pasta atual (`basename "$(pwd)"`). Se for `mazyos`, `MazyOS`, `MazyOS-main`, `mazyos-main` ou variação genérica:
 
 > "Notei que a pasta atual ainda tem nome genérico ('<nome-atual>'). O ideal é a pasta ter o nome do seu negócio, não 'MazyOS'. Quando terminarmos o setup, te lembro de renomear (é rápido — fechar VS Code, renomear a pasta no Finder/Explorer, abrir de novo). Bora seguir?"
 
@@ -98,6 +98,9 @@ Se o usuário forneceu cores/fontes/logo (perguntas 9-10), preencher os campos c
 ### `CLAUDE.md`
 Pegar o template correspondente ao perfil escolhido na Fase 1 (`templates/perfis/claude-md-<perfil>.md`), adaptar com o nome do negócio e estrutura de pastas mencionada nas respostas, e sobrescrever o `CLAUDE.md` da raiz.
 
+### `README.md`
+O repositório foi clonado do template do MazyOS, então o `README.md` ainda tem o texto de divulgação do MazyOS (o que é, como instalar, a tese do produto). **Sobrescrever sempre** com um README sobre o negócio do cliente: nome, o que faz, o que esse projeto entrega (site, conteúdo, ads — conforme combinado), status atual, e uma explicação curta da estrutura de pastas. Nunca deixar o README final falando sobre o MazyOS em si — isso já vive no repositório de instalação (github.com/NickolasLima/MazyOS), não precisa ser repetido em cada cliente.
+
 ---
 
 ## Fase 4 — Resumo
@@ -111,6 +114,7 @@ Mostrar pro usuário o que foi configurado:
 ✓ Foco atual: _memoria/estrategia.md
 ✓ Marca: identidade/design-guide.md  [preenchida | em branco — preencher depois]
 ✓ CLAUDE.md adaptado pro perfil [perfil]
+✓ README.md reescrito sobre o negócio do cliente
 ```
 
 ---
