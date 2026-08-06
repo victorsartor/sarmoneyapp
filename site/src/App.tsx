@@ -92,10 +92,9 @@ export default function App() {
   async function handleEdit(
     expense: Expense,
     changes: { description: string; amount: number; personId?: string | null; purchaseDate?: string | null },
-    scope: "single" | "series",
   ) {
     try {
-      await updateExpense(expense, changes, scope);
+      await updateExpense(expense, changes);
       loadData();
     } catch (err) {
       alert(`Não deu pra salvar a edição: ${(err as Error).message ?? err}`);
@@ -165,7 +164,7 @@ export default function App() {
                 expenses={visibleExpenses}
                 profiles={profiles}
                 month={month}
-                canRemove={isAdmin}
+                isAdmin={isAdmin}
                 onRemove={handleRemove}
                 onCancelRecurring={handleCancelRecurring}
                 onEdit={handleEdit}

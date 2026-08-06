@@ -257,9 +257,6 @@ export async function updateExpense(
     personId?: string | null;
     purchaseDate?: string | null;
   },
-  // "series" muda todas as parcelas do grupo (mudou o preço do
-  // apartamento, corrigiu valor errado); "single" mexe só no mês aberto.
-  scope: "single" | "series" = "single",
 ) {
   const patch = {
     description: changes.description,
@@ -268,13 +265,15 @@ export async function updateExpense(
     ...(changes.purchaseDate !== undefined ? { purchase_date: changes.purchaseDate } : {}),
   };
 
-  const query =
-    scope === "series" && expense.purchaseGroupId
-      ? supabase
-          .from("expenses")
-          .update(patch)
-          .eq("purchase_group_id", expense.purchaseGroupId)
-      : supabase.from("expenses").update(patch).eq("id", expense.id);
+  // Mudar nome ou valor vale pra todos os meses: numa compra parcelada
+  // isso é a série inteira; numa assinatura recorrente é uma linha só,
+  // que por natureza já aparece em todos os meses.
+  const query = expense.purchaseGroupId
+    ? supabase
+        .from("expenses")
+        .update(patch)
+        .eq("purchase_group_id", expense.purchaseGroupId)
+    : supabase.from("expenses").update(patch).eq("id", expense.id);
 
   const { error } = await query;
   if (error) throw error;

@@ -26,17 +26,14 @@ export function SummaryCard({ summary }: Props) {
           {summary.perPerson.map(({ profile, percentual, apartmentShare, individual, total }) => (
             <li key={profile.id} className="text-sm">
               <div className="flex items-center justify-between font-medium">
-                <span>
-                  {profile.name}{" "}
-                  <span className="text-neutral-400">
-                    ({percentual}% do apto)
-                  </span>
-                </span>
+                <span>{profile.name}</span>
                 <span className="tabular-nums">{formatCurrency(total)}</span>
               </div>
               <div className="flex flex-col text-xs text-neutral-400">
-                <span>Apto {formatCurrency(apartmentShare)}</span>
-                <span>Individual {formatCurrency(individual)}</span>
+                <span>
+                  AP ({percentual}%) {formatCurrency(apartmentShare)}
+                </span>
+                <span>Outras despesas {formatCurrency(individual)}</span>
               </div>
             </li>
           ))}
