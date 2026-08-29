@@ -81,15 +81,18 @@ export function ExpenseList({
       ? expenses
       : expenses.filter((e) => e.personId && selectedPeople.includes(e.personId));
 
-  // Categoria primeiro (mantém cartão junto de cartão) e, dentro dela,
-  // ordem alfabética pela descrição. sensitivity "base" faz "Água" e
-  // "agua" caírem no mesmo lugar em vez de irem pro fim da lista.
+  // Alfabético puro pela descrição, misturando as categorias — senão a
+  // lista ordena Cartão de A a Z e depois recomeça do A no Pix.
+  // sensitivity "base" faz "Água" e "agua" caírem no mesmo lugar em vez
+  // de irem pro fim da lista. Categoria e id só desempatam descrições
+  // iguais (duas "Veterinária"), pra ordem não trocar a cada carga.
   const sorted = [...visible].sort(
     (a, b) =>
-      a.category.localeCompare(b.category, "pt-BR") ||
       a.description.localeCompare(b.description, "pt-BR", {
         sensitivity: "base",
-      }),
+      }) ||
+      a.category.localeCompare(b.category, "pt-BR") ||
+      a.id.localeCompare(b.id),
   );
 
   return (
