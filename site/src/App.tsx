@@ -4,6 +4,8 @@ import { Login } from "./components/Login";
 import { AdminForms } from "./components/AdminForms";
 import { SummaryCard } from "./components/SummaryCard";
 import { ExpenseList } from "./components/ExpenseList";
+import { MonthNav } from "./components/MonthNav";
+import { ShoppingList } from "./components/ShoppingList";
 import { FullPageSpinner, Spinner } from "./components/Spinner";
 import {
   cancelRecurringExpense,
@@ -17,12 +19,15 @@ import { computeMonthSummary, percentuaisForMonth } from "./lib/summary";
 import { currentMonthKey, monthLabel } from "./lib/format";
 import type { ApartmentShare, Expense, Profile } from "./types";
 
+type Tab = "despesas" | "compras";
+
 export default function App() {
   const { loading, profile, signOut } = useAuth();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [shares, setShares] = useState<ApartmentShare[]>([]);
   const [month, setMonth] = useState(currentMonthKey());
+  const [tab, setTab] = useState<Tab>("despesas");
   const [loadingData, setLoadingData] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
 
@@ -118,14 +123,7 @@ export default function App() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <input
-              id="month"
-              aria-label={monthLabel(month)}
-              type="month"
-              value={month}
-              onChange={(e) => setMonth(e.target.value)}
-              className="rounded-lg border border-black/10 bg-transparent px-2 py-2 text-sm dark:border-white/10"
-            />
+            <MonthNav month={month} onChange={setMonth} />
             <button
               onClick={signOut}
               className="rounded-lg px-2 py-2 text-sm text-neutral-400 transition-colors duration-150 hover:bg-red-500/10 hover:text-red-500"
@@ -133,9 +131,31 @@ export default function App() {
               Sair
             </button>
           </div>
+
+          <nav className="flex w-full gap-1">
+            <span className="inline-flex gap-1 rounded-lg bg-black/5 p-1 dark:bg-white/10">
+              <TabButton
+                active={tab === "despesas"}
+                onClick={() => setTab("despesas")}
+              >
+                Despesas
+              </TabButton>
+              <TabButton
+                active={tab === "compras"}
+                onClick={() => setTab("compras")}
+              >
+                Lista de compras
+              </TabButton>
+            </span>
+          </nav>
         </div>
       </header>
 
+      {tab === "compras" ? (
+        <main className="mx-auto max-w-4xl px-4 py-6">
+          <ShoppingList createdBy={profile.id} />
+        </main>
+      ) : (
       <main className="mx-auto grid max-w-4xl gap-4 px-4 py-6 sm:grid-cols-2">
         {loadError && (
           <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-600 sm:col-span-2 dark:text-red-400">
@@ -191,6 +211,33 @@ export default function App() {
           )}
         </div>
       </main>
+      )}
     </div>
+  );
+}
+
+function TabButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={
+        "rounded-md px-3 py-1.5 text-sm transition-all duration-200 active:scale-95 " +
+        (active
+          ? "bg-white font-medium shadow-sm dark:bg-neutral-800"
+          : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white")
+      }
+    >
+      {children}
+    </button>
   );
 }

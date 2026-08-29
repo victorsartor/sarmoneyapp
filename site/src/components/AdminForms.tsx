@@ -10,7 +10,7 @@ import {
   removeApartmentShares,
   saveApartmentShares,
 } from "../lib/data";
-import { monthLabel } from "../lib/format";
+import { monthLabel, todayISO } from "../lib/format";
 
 const SINGLE_EXPENSE_CATEGORIES = EXPENSE_CATEGORIES.filter(
   (c): c is "Pix" | "Outro" => c === "Pix" || c === "Outro",
@@ -50,7 +50,6 @@ export function AdminForms({
         onSaved={onSaved}
       />
       <CardPurchaseForm
-        month={month}
         profiles={profiles}
         createdBy={createdBy}
         onSaved={onSaved}
@@ -417,12 +416,10 @@ function SingleExpenseForm({
 }
 
 function CardPurchaseForm({
-  month,
   profiles,
   createdBy,
   onSaved,
 }: {
-  month: string;
   profiles: Profile[];
   createdBy: string;
   onSaved: () => void;
@@ -431,7 +428,9 @@ function CardPurchaseForm({
   const [installmentAmount, setInstallmentAmount] = useState("");
   const [installments, setInstallments] = useState("1");
   const [personId, setPersonId] = useState(profiles[0]?.id ?? "");
-  const [purchaseDate, setPurchaseDate] = useState(`${month}-01`);
+  // Quase toda compra é lançada no dia em que aconteceu, então o campo
+  // já vem com hoje em vez do dia 1º do mês que está sendo visto.
+  const [purchaseDate, setPurchaseDate] = useState(todayISO());
   const [recurring, setRecurring] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -481,6 +480,7 @@ function CardPurchaseForm({
       setDescription("");
       setInstallmentAmount("");
       setInstallments("1");
+      setPurchaseDate(todayISO());
       setRecurring(false);
       onSaved();
     } catch (err) {

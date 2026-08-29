@@ -37,3 +37,11 @@ export interface Expense {
   purchaseDate: string | null; // 'YYYY-MM-DD', dia exato (hoje só usado no Cartão)
   recurring: boolean; // assinatura tipo Netflix: cobra todo mês até ser cancelada
 }
+
+// Lista de compras da casa: não tem mês, é uma lista só que todo mundo
+// vê e edita.
+export interface ShoppingItem {
+  id: string;
+  description: string;
+  done: boolean;
+}

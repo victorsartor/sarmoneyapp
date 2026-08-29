@@ -4,6 +4,7 @@ import type {
   Expense,
   ExpenseCategory,
   Profile,
+  ShoppingItem,
 } from "../types";
 
 interface ExpenseRow {
@@ -276,6 +277,50 @@ export async function updateExpense(
     : supabase.from("expenses").update(patch).eq("id", expense.id);
 
   const { error } = await query;
+  if (error) throw error;
+}
+
+export async function fetchShoppingItems(): Promise<ShoppingItem[]> {
+  const { data, error } = await supabase
+    .from("shopping_items")
+    .select("id, description, done");
+
+  if (error) throw error;
+  return data as ShoppingItem[];
+}
+
+export async function addShoppingItem(params: {
+  description: string;
+  createdBy: string;
+}) {
+  const { error } = await supabase.from("shopping_items").insert({
+    description: params.description,
+    created_by: params.createdBy,
+  });
+
+  if (error) throw error;
+}
+
+export async function setShoppingItemDone(id: string, done: boolean) {
+  const { error } = await supabase
+    .from("shopping_items")
+    .update({ done })
+    .eq("id", id);
+
+  if (error) throw error;
+}
+
+export async function removeShoppingItem(id: string) {
+  const { error } = await supabase.from("shopping_items").delete().eq("id", id);
+  if (error) throw error;
+}
+
+export async function clearBoughtShoppingItems() {
+  const { error } = await supabase
+    .from("shopping_items")
+    .delete()
+    .eq("done", true);
+
   if (error) throw error;
 }
 

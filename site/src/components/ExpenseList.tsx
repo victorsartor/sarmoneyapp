@@ -81,8 +81,15 @@ export function ExpenseList({
       ? expenses
       : expenses.filter((e) => e.personId && selectedPeople.includes(e.personId));
 
-  const sorted = [...visible].sort((a, b) =>
-    a.category.localeCompare(b.category),
+  // Categoria primeiro (mantém cartão junto de cartão) e, dentro dela,
+  // ordem alfabética pela descrição. sensitivity "base" faz "Água" e
+  // "agua" caírem no mesmo lugar em vez de irem pro fim da lista.
+  const sorted = [...visible].sort(
+    (a, b) =>
+      a.category.localeCompare(b.category, "pt-BR") ||
+      a.description.localeCompare(b.description, "pt-BR", {
+        sensitivity: "base",
+      }),
   );
 
   return (
