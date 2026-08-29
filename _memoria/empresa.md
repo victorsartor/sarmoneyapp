@@ -5,12 +5,12 @@
 
 **Nome:** SARMONEYAPP
 **Negócio:** Ferramenta interna de gestão financeira familiar — não é produto público, uso pessoal/familiar
-**O que faz:** Organiza e divide despesas mensais (aluguel/condomínio, cartão, Pix), com rateio por porcentagem entre os membros da família
+**O que faz:** Organiza e divide despesas mensais (aluguel/condomínio, cartão, Pix), com rateio por porcentagem entre os membros da família, mais uma lista de compras da casa compartilhada entre todos
 **Perfil:** Freelancer (projeto solo, uso pessoal/familiar — sem clientes externos)
 **Atende clientes:** Não tem clientes externos — só a família do criador usa
 **Equipe:** Solo
-**Ferramentas:** React + Vite + TypeScript + Tailwind v4 (app em `site/`), Supabase (banco de dados Postgres + login)
-**Principais entregas:** Divisão e organização de despesas familiares mensais
+**Ferramentas:** React + Vite + TypeScript + Tailwind v4 (app em `site/`), Supabase (banco de dados Postgres + login), Vercel (hospedagem — deploya sozinha a cada push na `main`)
+**Principais entregas:** Divisão e organização de despesas familiares mensais; lista de compras da casa
 
 ## Contexto adicional
 

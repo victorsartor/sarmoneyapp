@@ -26,7 +26,10 @@ migrações aplicadas, os 3 usuários cadastrados, `.env` configurado. A
 pasta `site/supabase/` (schema e migrações) foi removida do repositório
 em 2026-07-23 — o banco em produção é a única fonte de verdade do
 schema hoje, então mudanças de estrutura são feitas direto no SQL Editor
-do Supabase.
+do Supabase. Ajuste (2026-08-29): o SQL de tabela nova passou a ser
+guardado em `site/sql/` antes de rodar. O banco continua sendo a fonte
+de verdade (não é migração automática) — a pasta serve de registro do
+que foi rodado à mão, começando por `lista-de-compras.sql`.
 
 Ajuste de regra (2026-07-20): apartamento agora é parcelado como um
 financiamento (nº de parcelas + rentabilidade % ao mês), não um
@@ -86,6 +89,24 @@ Restrição de uso (2026-08-05): os pais acessam o app principalmente pelo
 celular, então o layout precisa funcionar bem em tela estreita (~375px).
 Cabeçalho e lista de despesas ajustados pra empilhar no celular e voltar
 a uma linha só no desktop.
+
+Nova área (2026-08-29): aba "Lista de compras" ao lado do calendário, na
+tabela `shopping_items`. Diferente das despesas, não tem mês e não é só
+do admin — é a lista da casa, qualquer pessoa logada adiciona, marca e
+remove. Item marcado fica riscado e desce pro fim; pendentes primeiro,
+alfabéticos dentro de cada grupo.
+
+Progresso (2026-08-29): o seletor de mês deixou de ser `<input
+type="month">` e virou setas de voltar/avançar, já abrindo no mês atual —
+os pais não precisam mais escolher mês numa lista. Compra no cartão passou
+a abrir com a data de hoje em vez do dia 1º do mês aberto (calculada pelo
+relógio local, não por `toISOString()`, que à noite viraria o dia em UTC e
+gravaria a data errada).
+
+Regra de ordenação (2026-08-29): a lista de despesas é alfabética pura
+pela descrição, misturando as categorias. A primeira tentativa agrupou por
+categoria antes de ordenar e o resultado confundiu — ia de A a Z no Cartão
+e recomeçava do A no Pix. Categoria e id só desempatam descrições iguais.
 
 ## Prioridade principal
 
