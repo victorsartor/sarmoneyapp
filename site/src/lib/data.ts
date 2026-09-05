@@ -5,6 +5,7 @@ import type {
   ExpenseCategory,
   Profile,
   ShoppingItem,
+  ShoppingKind,
 } from "../types";
 
 interface ExpenseRow {
@@ -283,7 +284,7 @@ export async function updateExpense(
 export async function fetchShoppingItems(): Promise<ShoppingItem[]> {
   const { data, error } = await supabase
     .from("shopping_items")
-    .select("id, description, done");
+    .select("id, description, done, kind");
 
   if (error) throw error;
   return data as ShoppingItem[];
@@ -291,10 +292,12 @@ export async function fetchShoppingItems(): Promise<ShoppingItem[]> {
 
 export async function addShoppingItem(params: {
   description: string;
+  kind: ShoppingKind;
   createdBy: string;
 }) {
   const { error } = await supabase.from("shopping_items").insert({
     description: params.description,
+    kind: params.kind,
     created_by: params.createdBy,
   });
 
@@ -315,11 +318,14 @@ export async function removeShoppingItem(id: string) {
   if (error) throw error;
 }
 
-export async function clearBoughtShoppingItems() {
+// Limpa só a aba aberta: quem terminou a feira não quer apagar o que
+// ficou marcado na lista de limpeza.
+export async function clearBoughtShoppingItems(kind: ShoppingKind) {
   const { error } = await supabase
     .from("shopping_items")
     .delete()
-    .eq("done", true);
+    .eq("done", true)
+    .eq("kind", kind);
 
   if (error) throw error;
 }

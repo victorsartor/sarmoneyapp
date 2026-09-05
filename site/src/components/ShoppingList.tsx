@@ -7,14 +7,26 @@ import {
   setShoppingItemDone,
 } from "../lib/data";
 import { Spinner } from "./Spinner";
-import type { ShoppingItem } from "../types";
+import { SHOPPING_KINDS, type ShoppingItem, type ShoppingKind } from "../types";
 
 interface Props {
   createdBy: string;
 }
 
+// Texto do campo por aba, pra ficar claro onde o item vai cair.
+const PLACEHOLDER: Record<ShoppingKind, string> = {
+  comida: "O que falta de comida?",
+  limpeza: "O que falta de limpeza ou higiene?",
+};
+
+const VAZIO: Record<ShoppingKind, string> = {
+  comida: "Nenhuma comida anotada. Escreva aí em cima o que falta.",
+  limpeza: "Nada de limpeza ou higiene anotado ainda.",
+};
+
 export function ShoppingList({ createdBy }: Props) {
   const [items, setItems] = useState<ShoppingItem[]>([]);
+  const [kind, setKind] = useState<ShoppingKind>("comida");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -36,21 +48,31 @@ export function ShoppingList({ createdBy }: Props) {
     load();
   }, [load]);
 
-  // Faltando primeiro, comprados no fim — dentro de cada grupo, ordem
-  // alfabética, que é como a gente lê a lista no mercado.
+  // Só a aba aberta aparece. Faltando primeiro, comprados no fim — dentro
+  // de cada grupo, ordem alfabética, que é como a gente lê a lista no
+  // mercado.
   const sorted = useMemo(
     () =>
-      [...items].sort(
-        (a, b) =>
-          Number(a.done) - Number(b.done) ||
-          a.description.localeCompare(b.description, "pt-BR", {
-            sensitivity: "base",
-          }),
-      ),
-    [items],
+      items
+        .filter((i) => i.kind === kind)
+        .sort(
+          (a, b) =>
+            Number(a.done) - Number(b.done) ||
+            a.description.localeCompare(b.description, "pt-BR", {
+              sensitivity: "base",
+            }),
+        ),
+    [items, kind],
   );
 
-  const boughtCount = items.filter((i) => i.done).length;
+  // Quantos faltam em cada aba, pra enxergar a outra sem trocar de aba.
+  const pendentes = useMemo(() => {
+    const conta: Record<ShoppingKind, number> = { comida: 0, limpeza: 0 };
+    for (const item of items) if (!item.done) conta[item.kind] += 1;
+    return conta;
+  }, [items]);
+
+  const boughtCount = sorted.filter((i) => i.done).length;
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
@@ -59,7 +81,7 @@ export function ShoppingList({ createdBy }: Props) {
 
     setSaving(true);
     try {
-      await addShoppingItem({ description: text, createdBy });
+      await addShoppingItem({ description: text, kind, createdBy });
       setDescription("");
       await load();
     } catch (err) {
@@ -98,7 +120,7 @@ export function ShoppingList({ createdBy }: Props) {
     if (!confirm(`Tirar da lista os ${boughtCount} itens já comprados?`)) return;
 
     try {
-      await clearBoughtShoppingItems();
+      await clearBoughtShoppingItems(kind);
       await load();
     } catch (err) {
       alert(`Não deu pra limpar: ${(err as Error).message ?? err}`);
@@ -111,11 +133,37 @@ export function ShoppingList({ createdBy }: Props) {
         Lista de compras
       </h2>
 
+      {/* Largura natural em vez de dividir a linha: em 375px "Limpeza e
+          higiene" não cabe numa metade e sairia cortado. */}
+      <nav className="mb-4 inline-flex gap-1 rounded-lg bg-black/5 p-1 dark:bg-white/10">
+        {SHOPPING_KINDS.map((opcao) => (
+          <button
+            key={opcao.value}
+            type="button"
+            onClick={() => setKind(opcao.value)}
+            aria-pressed={kind === opcao.value}
+            className={
+              "whitespace-nowrap rounded-md px-3 py-2 text-sm transition-all duration-200 active:scale-95 " +
+              (kind === opcao.value
+                ? "bg-white font-medium shadow-sm dark:bg-neutral-800"
+                : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white")
+            }
+          >
+            {opcao.label}
+            {pendentes[opcao.value] > 0 && (
+              <span className="ml-1.5 text-xs text-neutral-400">
+                {pendentes[opcao.value]}
+              </span>
+            )}
+          </button>
+        ))}
+      </nav>
+
       <form onSubmit={handleAdd} className="mb-4 flex gap-2">
         <input
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="O que falta comprar?"
+          placeholder={PLACEHOLDER[kind]}
           className="min-w-0 flex-1 rounded-lg border border-black/10 bg-transparent px-3 py-2 text-sm dark:border-white/10"
         />
         <button
@@ -144,9 +192,7 @@ export function ShoppingList({ createdBy }: Props) {
           <Spinner className="h-6 w-6 text-neutral-400" />
         </div>
       ) : sorted.length === 0 ? (
-        <p className="text-sm text-neutral-400">
-          A lista está vazia. Escreva aí em cima o que falta comprar.
-        </p>
+        <p className="text-sm text-neutral-400">{VAZIO[kind]}</p>
       ) : (
         <ul className="stagger flex flex-col divide-y divide-black/5 dark:divide-white/10">
           {sorted.map((item) => (

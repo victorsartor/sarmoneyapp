@@ -38,10 +38,20 @@ export interface Expense {
   recurring: boolean; // assinatura tipo Netflix: cobra todo mês até ser cancelada
 }
 
+// A lista de compras é dividida em duas abas pra não misturar o carrinho
+// do mercado com o que é de limpeza e higiene.
+export const SHOPPING_KINDS = [
+  { value: "comida", label: "Comidas" },
+  { value: "limpeza", label: "Limpeza e higiene" },
+] as const;
+
+export type ShoppingKind = (typeof SHOPPING_KINDS)[number]["value"];
+
 // Lista de compras da casa: não tem mês, é uma lista só que todo mundo
 // vê e edita.
 export interface ShoppingItem {
   id: string;
   description: string;
   done: boolean;
+  kind: ShoppingKind;
 }
