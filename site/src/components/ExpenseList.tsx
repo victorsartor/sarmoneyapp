@@ -2,6 +2,27 @@ import { useState } from "react";
 import type { Expense, Profile } from "../types";
 import { formatCurrency, formatDay } from "../lib/format";
 
+// A preferência de recolher fica salva porque o motivo de fechar a lista
+// é justamente não ter que rolar tudo de novo na próxima vez que abrir o
+// app no celular. Navegador com storage bloqueado só perde essa memória.
+const COLLAPSED_KEY = "sarmoneyapp:despesas-recolhidas";
+
+function readCollapsed() {
+  try {
+    return localStorage.getItem(COLLAPSED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function saveCollapsed(value: boolean) {
+  try {
+    localStorage.setItem(COLLAPSED_KEY, value ? "1" : "0");
+  } catch {
+    // Sem storage a lista só volta aberta na próxima sessão.
+  }
+}
+
 interface Props {
   expenses: Expense[];
   profiles: Profile[];
@@ -28,6 +49,13 @@ export function ExpenseList({
   // null = ninguém filtrado, mostra tudo. Guardar assim evita depender de
   // um efeito pra sincronizar quando a lista de perfis chega do banco.
   const [selectedPeople, setSelectedPeople] = useState<string[] | null>(null);
+  const [collapsed, setCollapsed] = useState(readCollapsed);
+
+  function toggleCollapsed() {
+    const next = !collapsed;
+    setCollapsed(next);
+    saveCollapsed(next);
+  }
 
   function isPersonSelected(personId: string) {
     return selectedPeople === null || selectedPeople.includes(personId);
@@ -95,30 +123,62 @@ export function ExpenseList({
       a.id.localeCompare(b.id),
   );
 
+  // Só o admin filtra por pessoa; os outros veem apenas o que é deles.
+  const showFilters = isAdmin && profiles.length > 0;
+
   return (
     <>
-      {isAdmin && profiles.length > 0 && (
-        <div className="mb-3 flex flex-wrap gap-2">
-          {profiles.map((p) => (
+      {(showFilters || expenses.length > 0) && (
+        <div className="mb-3 flex items-center gap-2">
+          {showFilters && (
+            <div className="flex min-w-0 flex-wrap gap-2">
+              {profiles.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => togglePerson(p.id)}
+                  aria-pressed={isPersonSelected(p.id)}
+                  className={
+                    "rounded-full px-3 py-2 text-xs transition-all duration-200 active:scale-95 " +
+                    (isPersonSelected(p.id)
+                      ? "bg-emerald-600 font-medium text-white shadow-sm hover:bg-emerald-700"
+                      : "border border-black/10 text-neutral-500 hover:border-black/30 dark:border-white/10 dark:hover:border-white/30")
+                  }
+                >
+                  {p.name}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {expenses.length > 0 && (
             <button
-              key={p.id}
               type="button"
-              onClick={() => togglePerson(p.id)}
-              aria-pressed={isPersonSelected(p.id)}
-              className={
-                "rounded-full px-3 py-1 text-xs transition-all duration-200 active:scale-95 " +
-                (isPersonSelected(p.id)
-                  ? "bg-emerald-600 font-medium text-white shadow-sm hover:bg-emerald-700"
-                  : "border border-black/10 text-neutral-500 hover:border-black/30 dark:border-white/10 dark:hover:border-white/30")
+              onClick={toggleCollapsed}
+              aria-expanded={!collapsed}
+              aria-label={
+                collapsed
+                  ? "Mostrar as despesas do mês"
+                  : "Esconder as despesas do mês"
               }
+              className="ml-auto flex min-h-10 shrink-0 items-center gap-1.5 rounded-full border border-black/10 px-3 text-xs tabular-nums text-neutral-500 transition-colors duration-200 hover:border-black/30 active:scale-95 dark:border-white/10 dark:hover:border-white/30"
             >
-              {p.name}
+              {sorted.length}
+              <span
+                aria-hidden
+                className={
+                  "inline-block text-sm leading-none transition-transform duration-200 " +
+                  (collapsed ? "" : "rotate-180")
+                }
+              >
+                ▾
+              </span>
             </button>
-          ))}
+          )}
         </div>
       )}
 
-      {expenses.length === 0 ? (
+      {collapsed ? null : expenses.length === 0 ? (
         <p className="text-sm text-neutral-400">
           Nenhuma despesa lançada nesse mês ainda.
         </p>
