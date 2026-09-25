@@ -330,6 +330,18 @@ export async function clearBoughtShoppingItems(kind: ShoppingKind) {
   if (error) throw error;
 }
 
+// Reiniciar não apaga nada: só desmarca a aba inteira, pra próxima
+// feira começar com a mesma lista de sempre em vez de digitar tudo de novo.
+export async function resetShoppingItems(kind: ShoppingKind) {
+  const { error } = await supabase
+    .from("shopping_items")
+    .update({ done: false })
+    .eq("kind", kind)
+    .eq("done", true);
+
+  if (error) throw error;
+}
+
 export async function removeExpense(expense: Pick<Expense, "id" | "purchaseGroupId">) {
   // Se a despesa faz parte de uma compra parcelada (cartão ou
   // apartamento), apaga todas as parcelas do grupo — não só a do mês

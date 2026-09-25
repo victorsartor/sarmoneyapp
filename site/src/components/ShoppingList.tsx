@@ -4,6 +4,7 @@ import {
   clearBoughtShoppingItems,
   fetchShoppingItems,
   removeShoppingItem,
+  resetShoppingItems,
   setShoppingItemDone,
 } from "../lib/data";
 import { Spinner } from "./Spinner";
@@ -73,6 +74,8 @@ export function ShoppingList({ createdBy }: Props) {
   }, [items]);
 
   const boughtCount = sorted.filter((i) => i.done).length;
+  // Feira terminada: tudo que está na aba já foi marcado.
+  const allDone = sorted.length > 0 && boughtCount === sorted.length;
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
@@ -112,6 +115,20 @@ export function ShoppingList({ createdBy }: Props) {
       await removeShoppingItem(item.id);
     } catch (err) {
       alert(`Não deu pra remover: ${(err as Error).message ?? err}`);
+      load();
+    }
+  }
+
+  async function handleReset() {
+    // Desmarca na hora, igual ao toque num item: reiniciar não apaga
+    // nada, então não vale travar a tela esperando o banco responder.
+    setItems((prev) =>
+      prev.map((i) => (i.kind === kind ? { ...i, done: false } : i)),
+    );
+    try {
+      await resetShoppingItems(kind);
+    } catch (err) {
+      alert(`Não deu pra reiniciar: ${(err as Error).message ?? err}`);
       load();
     }
   }
@@ -158,6 +175,21 @@ export function ShoppingList({ createdBy }: Props) {
           </button>
         ))}
       </nav>
+
+      {allDone && (
+        <div className="animate-fade-rise mb-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-emerald-600/30 bg-emerald-600/10 p-3">
+          <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+            Tudo comprado nessa aba.
+          </p>
+          <button
+            type="button"
+            onClick={handleReset}
+            className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-medium text-white transition-all duration-150 hover:bg-emerald-700 hover:shadow-md active:scale-95"
+          >
+            Reiniciar a lista
+          </button>
+        </div>
+      )}
 
       <form onSubmit={handleAdd} className="mb-4 flex gap-2">
         <input
